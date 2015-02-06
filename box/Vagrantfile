@@ -11,7 +11,10 @@ Vagrant.configure(2) do |config|
   config.vm.network :forwarded_port, host: 7000, guest: 7000
   config.vm.network :forwarded_port, host: 7001, guest: 7001
 
-  config.vm.synced_folder "../src/", "/var/src"
+  config.vm.synced_folder "../src/", "/var/app/src"
+  config.vm.synced_folder "../build-dev/", "/var/app/build-dev"
+  config.vm.synced_folder "../build-prod/", "/var/app/build-prod"
+  config.vm.synced_folder "../dist/", "/var/app/dist"
   config.vm.synced_folder "../scripts/", "/home/vagrant/scripts"
 
   config.vm.provision "shell", :inline => <<-SHELL
