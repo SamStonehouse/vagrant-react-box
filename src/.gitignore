@@ -32,3 +32,6 @@ node_modules
 build-dev
 build-prod
 build
+
+# Post JSX Folder used by Grunt
+temp

@@ -3,7 +3,8 @@ module.exports = function(grunt) {
 	var app = {
 		devDest: "build-dev/",
 		prodDest: "build-prod/",
-		releaseDest: "dist/"
+		releaseDest: "dist/",
+		tempDest: "temp/"
 	};
 
 	app.assetsSub = "assets/";
@@ -46,63 +47,80 @@ module.exports = function(grunt) {
 			devViews: {
 				src: ['*.html'],
 				dest: app.devDest + app.viewsDest,
-				options: {
-					expand: true,
-					cwd: app.viewLocation
-				}
+				expand: true,
+				cwd: app.viewLocation
 			},
 			devAssets: {
-				src: [app.assets, app.views],
+				src: ['*'],
 				dest: app.devDest + "assets/",
-				options: {
-					expand: true
-				},
+				expand: true,
+				cwd: app.assets
 			},
-			prod: {
-				src: [app.assets, app.views],
-				dest: app.devDest + app.assetsSub,
-				options: {
-					expand: true
-				},
+			devScripts: {
+				src: ['*.js'],
+				dest: app.devDest + app.scriptsDest,
+				expand: true,
+				cwd: app.tempDest
+			}
+			prodViews: {
+				src: ['*.html'],
+				dest: app.prodDest + app.viewsDest,
+				expand: true,
+				cwd: app.viewLocation
 			},
-			release: {
-				src: [app.assets, app.views],
-				dest: app.releaseDest + app.assetsSub,
-				options: {
-					expand: true
-				},
+			prodAssets: {
+				src: ['*'],
+				dest: app.prodDest + "assets/",
+				expand: true,
+				cwd: app.assets
 			},
+			prodScripts: {
+				src: ['*.js'],
+				dest: app.prodDest + app.scriptsDest + "lib.js",
+				expand: true,
+				cwd: app.asstempDestets
+			}
+			releaseViews: {
+				src: ['*.html'],
+				dest: app.releaseDest + app.viewsDest,
+				expand: true,
+				cwd: app.viewLocation
+			},
+			releaseAssets: {
+				src: ['*'],
+				dest: app.releaseDest + "assets/",
+				expand: true,
+				cwd: app.assets
+			},
+			releaseScripts: {
+				src: ['*.js'],
+				dest: app.releaseDest + app.scriptsDest;
+				expand: true,
+				flatten: true,
+				cwd: app.tempDest
+			}
 		},
-		concat: {
-			libsDev: {
+		react: {
+			libs: {
 				src: app.libScripts,
 				dest: app.devDest + app.scriptsDest + "lib.js",
 				options: {
 					sourcemap: true
 				}
 			},
-			libsProd: {
-				src: app.libScripts,
-				dest: app.prodDest + app.scriptsDest + "lib.js",
-			},
-			libsRelease: {
-				src: app.libScripts,
-				dest: app.releaseDest + app.scriptsDest + "lib.js",
-			},
-			appDev:{
+			app:{
 				src: app.appScripts,
 				dest: app.devDest + app.scriptsDest + "app.js",
 				options: {
 					sourcemap: true
 				}
 			},
-			appProd:{
-				src: app.appScripts,
-				dest: app.prodDest + app.scriptsDest + "app.js",
-			},
-			appRelease: {
-				src: app.appScripts,
-				dest: app.releaseDest + app.scriptsDest + "app.js",
+		},
+		jshint: {
+			all: ['Gruntfile.js', app.tempDest + 'app.js'],
+			options: {
+				reporter: require('jshint-stylish'),
+				jshintrc: '.jshintrc',
 			}
 		},
 		less: {
@@ -189,44 +207,53 @@ module.exports = function(grunt) {
 	});
 
 	grunt.loadNpmTasks('grunt-bump');
-	grunt.loadNpmTasks('grunt-contrib-concat');
+	//grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-clean');
+	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-less');
 	grunt.loadNpmTasks('grunt-concat-sourcemap');
 	grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.loadNpmTasks('grunt-react');
 	grunt.loadNpmTasks('grunt-targethtml');
-
-
 
 	grunt.registerTask('default', ['concat:libs', 'concat_sourcemap:main', 'less:development']);
 
 	grunt.registerTask('dev', [
 		'clean:dev',
+		'react:libs',
+		'react:app',
+		'jshint',
 		'copy:devViews',
 		'copy:devAssets',
-		'concat:libsDev',
-		'concat:appDev',
+		'copy:devScripts',
 		'less:dev',
 		'targethtml:dev'
 	]);
 
 	grunt.registerTask('prod', [
+		'jshint',
 		'clean:prod',
-		'copy:prod',
-		'concat:libsProd',
-		'concat:appProd',
+		'react:libs',
+		'react:app',
+		'jshint',
+		'copy:prodViews',
+		'copy:prodAssets',
+		'copy:prodScripts',
 		'less:prod',
 		'targethtml:prod'
 	]);
 
 	grunt.registerTask('release', [
 		'clean:release',
-		'copy:release',
-		'concat:libsRelease',
-		'concat:appRelease',
+		'react:libs',
+		'react:app',
+		'jshint',
+		'copy:releaseViews',
+		'copy:releaseAssets',
+		'copy:releaseScripts',
 		'less:release',
 		'targethtml:release',
 		'bump'
-		]);
+	]);
 };
