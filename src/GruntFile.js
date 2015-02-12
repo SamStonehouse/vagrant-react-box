@@ -203,7 +203,6 @@ module.exports = function(grunt) {
 	]);
 
 	grunt.registerTask('prod', [
-		'jshint',
 		'clean:prod',
 		//'jshint',
 		'copy:prodViews',
