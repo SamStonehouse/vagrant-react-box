@@ -1,3 +1,11 @@
-console.log("Build");
+require.config({
+    paths: {
+		"react": "assets/scripts/lib/react",
+		"JSXTransformer": "assets/scripts/lib/jsx-transformer",
+		"jsx": "assets/scripts/lib/jsx plugin"
+    },
+});
 
-var app = <Nav color="blue" />;
+require(['react', 'jsx!components/Timer'], function (React, Timer) {
+	React.renderComponent(<Timer />, document.getElementById('timer'));
+});

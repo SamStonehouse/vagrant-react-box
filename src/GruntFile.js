@@ -17,15 +17,14 @@ module.exports = function(grunt) {
 	app.viewsDest = "views/";
 
 	app.appScripts = [
-		"app/scripts/app/app.js",
-		"app/scripts/app/*.js",
-		"app/scripts/app/**/*.js"
+		"*.js",
+		"**/*.js"
 	];
 
-	app.libScripts = [
-		"app/scripts/lib/*.js",
-		"app/scripts/lib/**/*.js"
-	];
+	app.scriptsDir = "app/scripts/";
+
+
+	app.require = ["app/scripts/*.js", "app/scripts/**/*.js", ];
 
 	app.style = "app/styles/less/style.less";
 	app.styles = ['app/styles/**'];
@@ -57,11 +56,11 @@ module.exports = function(grunt) {
 				cwd: app.assets
 			},
 			devScripts: {
-				src: ['*.js'],
-				dest: app.devDest + app.scriptsDest,
+				src: app.appScripts,
+				dest: app.devDest + "assets/scripts/",
 				expand: true,
-				cwd: app.tempDest
-			}
+				cwd: app.scriptsDir
+			},
 			prodViews: {
 				src: ['*.html'],
 				dest: app.prodDest + app.viewsDest,
@@ -75,11 +74,11 @@ module.exports = function(grunt) {
 				cwd: app.assets
 			},
 			prodScripts: {
-				src: ['*.js'],
-				dest: app.prodDest + app.scriptsDest + "lib.js",
+				src: app.appScripts,
+				dest: app.prodDest + "assets/scripts/",
 				expand: true,
-				cwd: app.asstempDestets
-			}
+				cwd: app.scriptsDir
+			},
 			releaseViews: {
 				src: ['*.html'],
 				dest: app.releaseDest + app.viewsDest,
@@ -93,36 +92,19 @@ module.exports = function(grunt) {
 				cwd: app.assets
 			},
 			releaseScripts: {
-				src: ['*.js'],
-				dest: app.releaseDest + app.scriptsDest;
-				expand: true,
-				flatten: true,
-				cwd: app.tempDest
-			}
-		},
-		react: {
-			libs: {
-				src: app.libScripts,
-				dest: app.devDest + app.scriptsDest + "lib.js",
-				options: {
-					sourcemap: true
-				}
-			},
-			app:{
 				src: app.appScripts,
-				dest: app.devDest + app.scriptsDest + "app.js",
-				options: {
-					sourcemap: true
-				}
+				dest: app.releaseDest + "assets/scripts/",
+				expand: true,
+				cwd: app.scriptsDir
 			},
 		},
-		jshint: {
-			all: ['Gruntfile.js', app.tempDest + 'app.js'],
-			options: {
-				reporter: require('jshint-stylish'),
-				jshintrc: '.jshintrc',
-			}
-		},
+		// jshint: {
+		// 	all: ['Gruntfile.js', app.tempDest + 'app.js'],
+		// 	options: {
+		// 		reporter: require('jshint-stylish'),
+		// 		jshintrc: '.jshintrc',
+		// 	}
+		// },
 		less: {
 			dev: {
 				options: {
@@ -171,13 +153,6 @@ module.exports = function(grunt) {
 			}
 		},
 		watch: {
-			scripts: {
-				files: app.appScripts,
-				tasks: ['clean:devScripts', 'concat:appDev'],
-				options: {
-					livereload: 6997
-				}
-			},
 			styles: {
 				files: app.styles,
 				tasks: ['clean:devStyles', 'less:dev'],
@@ -207,23 +182,19 @@ module.exports = function(grunt) {
 	});
 
 	grunt.loadNpmTasks('grunt-bump');
-	//grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-less');
 	grunt.loadNpmTasks('grunt-concat-sourcemap');
 	grunt.loadNpmTasks('grunt-contrib-watch');
-	grunt.loadNpmTasks('grunt-react');
 	grunt.loadNpmTasks('grunt-targethtml');
 
 	grunt.registerTask('default', ['concat:libs', 'concat_sourcemap:main', 'less:development']);
 
 	grunt.registerTask('dev', [
 		'clean:dev',
-		'react:libs',
-		'react:app',
-		'jshint',
+		//'jshint',
 		'copy:devViews',
 		'copy:devAssets',
 		'copy:devScripts',
@@ -234,9 +205,7 @@ module.exports = function(grunt) {
 	grunt.registerTask('prod', [
 		'jshint',
 		'clean:prod',
-		'react:libs',
-		'react:app',
-		'jshint',
+		//'jshint',
 		'copy:prodViews',
 		'copy:prodAssets',
 		'copy:prodScripts',
@@ -246,9 +215,7 @@ module.exports = function(grunt) {
 
 	grunt.registerTask('release', [
 		'clean:release',
-		'react:libs',
-		'react:app',
-		'jshint',
+		//'jshint',
 		'copy:releaseViews',
 		'copy:releaseAssets',
 		'copy:releaseScripts',
