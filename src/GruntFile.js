@@ -18,7 +18,9 @@ module.exports = function(grunt) {
 
 	app.appScripts = [
 		"*.js",
-		"**/*.js"
+		"**/*.js",
+		"*.jsx",
+		"**/*.jsx"
 	];
 
 	app.scriptsDir = "app/scripts/";
@@ -120,7 +122,7 @@ module.exports = function(grunt) {
 			prod: {
 				options: {
 					plugins: [
-						autoprefixer({browsers: ["last 2 versions"]})
+						new autoprefixer({browsers: ["last 2 versions"]})
 					],
 					sourceMap: false,
 				},
@@ -130,7 +132,7 @@ module.exports = function(grunt) {
 			release: {
 				options: {
 					plugins: [
-						autoprefixer({browsers: ["last 2 versions"]})
+						new autoprefixer({browsers: ["last 2 versions"]})
 					],
 					sourceMap: false,
 				},

@@ -26,3 +26,7 @@ package { 'grunt-cli':
   provider => 'npm',
   require  => Class['nodejs'],
 }
+
+package { 'git':
+  ensure => "installed",
+}
